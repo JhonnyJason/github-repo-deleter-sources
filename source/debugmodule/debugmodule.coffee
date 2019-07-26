@@ -6,16 +6,10 @@ debugmodule.initialize = () ->
 
 debugmodule.modulesToDebug = 
     unbreaker: true
-    createprocessmodule: true
-    githubhandlermodule: true
-    githubremotehandlermodule: true
-    pathhandlermodule: true
-    configmodule: true
-    startupmodule: true
-    repositorytreehandlermodule: true
-    thingyinquirermodule: true
-    thingymodule: true
-    utilmodule: true
+    # deleteprocessmodule: true
+    # deletioninquirermodule: true
+    # githubhandlermodule: true
+    # startupmodule: true
 
 #region exposed variables
 

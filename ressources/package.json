@@ -1,7 +1,7 @@
 {
-  "name": "thingycreate-as-thingy",
-  "version": "0.0.1",
-  "description": "Wizard to create any thingy - (Apps, Websites, Services, CLI, Machine)",
+  "name": "github-repo-deleter",
+  "version": "0.1.0",
+  "description": "Cli helper tool to fast delete many repositories from your github account.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,33 +10,31 @@
     "Git",
     "github",
     "CLI",
-    "thingy",
-    "create",
-    "tool",
-    "webtech",
-    "web",
-    "app",
-    "toolset",
-    "build",
-    "system",
-    "build-system"
+    "delete",
+    "repository",
+    "repositories",
+    "repo",
+    "helper"
   ],
-  "author": "Lenard Frommelt lenard.frommelt@gne.or.at",
-  "license": "Unlicense",
   "bin": {
-    "thingycreate": "./index.js"
+    "github-repo-deleter": "./index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JhonnyJason/github-repo-deleter.git"
+  },
+  "author": "Lenard Frommelt",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/JhonnyJason/github-repo-deleter/issues"
+  },
+  "homepage": "https://github.com/JhonnyJason/github-repo-deleter#readme",  
   "dependencies": {
     "@octokit/rest": "^16.28.5",
     "chalk": "^2.4.2",
     "clear": "0.0.1",
     "clui": "^0.3.6",
     "figlet": "^1.2.3",
-    "fs-extra": "^8.1.0",
-    "inquirer": "^5.2.0",
-    "minimist": "^1.2.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "simple-git": "^1.122.0"
+    "inquirer": "^5.2.0"
   }
 }

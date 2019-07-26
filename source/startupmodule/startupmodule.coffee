@@ -5,7 +5,6 @@ startupmodule = {name: "startupmodule"}
 chalk       = require('chalk')
 clear       = require('clear')
 figlet      = require('figlet')
-minimist    = require('minimist')
 #endregion
 
 #log Switch
@@ -14,22 +13,25 @@ log = (arg) ->
     return
 
 #region internal variables
-createProcess = null
-config = null 
+deleteProcess = null
 #endregion
 
 ##initialization function  -> is automatically being called!  ONLY RELY ON DOM AND VARIABLES!! NO PLUGINS NO OHTER INITIALIZATIONS!!
 startupmodule.initialize = () ->
     log "startupmodule.initialize"
-    createProcess = allModules.createprocessmodule
-    config = allModules.configmodule
+    deleteProcess = allModules.deleteprocessmodule
 
 #region internal functions
 printBanner = ->
     clear()
     console.log(
         chalk.green(
-            figlet.textSync(config.public.name, { horizontalLayout: 'full' })
+            figlet.textSync("Delete", { horizontalLayout: 'full' })
+        )
+    )
+    console.log(
+        chalk.green(
+            figlet.textSync("Repos", { horizontalLayout: 'full' })
         )
     )
 
@@ -40,9 +42,7 @@ startupmodule.cliStartup = ->
     log "startupmodule.cliStartup"
     printBanner()
     try
-        args = minimist(process.argv.slice(2))
-        # console.log(chalk.yellow("caught arguments are: " + args._))
-        done = await createProcess.execute(args._[0], args._[1], args._[2])
+        done = await deleteProcess.execute()
         if done then console.log(chalk.green('All done!\n'));
     catch err
         console.log(chalk.red('Error!'));

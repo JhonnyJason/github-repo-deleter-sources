@@ -1,8 +1,8 @@
 githubhandlermodule = {name: "githubhandlermodule"}
 
 OctokitREST = require("@octokit/rest")
-inquirer = require("inquirer")
-chalk       = require('chalk')
+inquirer    = require("inquirer")
+c           = require('chalk')
 CLI         = require('clui')
 Spinner     = CLI.Spinner
 
@@ -13,6 +13,9 @@ log = (arg) ->
 
 #region internal variables
 octokit = null
+
+username = ""
+password = ""
 
 authQuestions = [ 
     {
@@ -46,8 +49,6 @@ twoFactorAuthentification = [
 #endregion
 
 #region exposed variables
-githubhandlermodule.user = ""
-githubhandlermodule.password = ""
 #endregion
 
 ##initialization function  -> is automatically being called!  ONLY RELY ON DOM AND VARIABLES!! NO PLUGINS NO OHTER INITIALIZATIONS!!
@@ -71,21 +72,20 @@ buildOctokit = ->
                     answer = await inquirer.prompt(twoFactorAuthentification)
                     status.start()
                     return answer.twoFactorAuthenticationCode
-            userAgent:"thingycreate v0.1.0",
+            userAgent:"github-repo-deleter v0.1.0",
             baseUrl: "https://api.github.com"
 
         octokit = new OctokitREST(options)
         try
             status.start();
             info = await octokit.users.getAuthenticated()
-            console.log(chalk.green("Credentials Check succeeded!"))
-            githubhandlermodule.user = answers.username
-            githubhandlermodule.password = answers.password
+            console.log(c.green("Credentials Check succeeded!"))
+            username = answers.username
+            password = answers.password
             authenticated = true
         catch err
-            console.log(chalk.red("Credentials Check failed!"))
-        finally
-            status.stop()
+            console.log(c.red("Credentials Check failed!"))
+        finally status.stop()
 #endregion
 
 #region exposed functions
@@ -93,44 +93,48 @@ githubhandlermodule.buildConnection = ->
     if (octokit == null)
         await buildOctokit()
 
-githubhandlermodule.assertUserHasNotThatRepo = (repo) ->
-    if (octokit == null)
-        await buildOctokit()
+githubhandlermodule.retrieveAllUserRepositories = ->
+    log "githubhandlermodule.retrieveAllUserRepositories"
+    # TODO implement
+    options = 
+        visibility: "all"
+        affiliation: "owner"
+        sort: "updated"
+        per_page: 100
+        direction: "asc"
+        page: 0
 
-    try
-        await octokit.repos.get({owner:githubhandlermodule.user, repo:repo})
-        throw "Repository: " + repo + " did Exist for user:" + githubhandlermodule.user + "!"
-    catch err
-        if(err.status == 404)
-            return
-        throw err
+    results = []
+    loop
+        answer = await octokit.repos.list(options)
+        #else return resultskeys = Object.keys(answer)
+        keys = Object.keys(answer)
+        data = answer.data
+        names = (repo.name for repo in data)
+        options.page++    
+        if names.length then results = results.concat(names)
+        else return results
+        
+    return
 
-githubhandlermodule.checkIfUserHasRepo= (repo) ->
-    if(octokit == null)
-        await buildOctokit()
-
-    status = new Spinner("Checking if repo exists (" + githubhandlermodule.user + "/" + repo + ")...")
-    try
-        status.start()
-        await octokit.repos.get({owner:githubhandlermodule.user, repo:repo})
-        return true
-    catch err
-        return "Repository " + githubhandlermodule.user + "/" + repo + " does not exist!"
-    finally
-        status.stop()
-
-githubhandlermodule.createRepository = (repo) ->
-    if (octokit == null)
-        await buildOctokit()
-
-    result = await octokit.repos.createForAuthenticatedUser({name:repo, private:true})
 
 githubhandlermodule.deleteUserRepository = (repo) ->
     if (octokit == null)
         await buildOctokit()
     
-    result = await octokit.repos.delete({owner:githubhandlermodule.user,repo:repo})
+    result = await octokit.repos.delete({owner:username,repo:repo})
     #console.log(result)
+    return
+
+githubhandlermodule.deleteReposForUser = (repos) ->
+    log "githubhandlermodule.deleteAllRepos"
+    status = new Spinner('Deleting the repositories...');
+    try
+        status.start()
+        promises =  (githubhandlermodule.deleteUserRepository(repo) for repo in repos)
+        await Promise.all(promises)
+    finally status.stop()
+    return
 
 #endregion
 
